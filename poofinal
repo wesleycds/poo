@@ -1,0 +1,280 @@
+import json
+from datetime import datetime
+
+#classes
+
+class Cliente:
+    def __init__(self, id: int, nome: str, email: str, fone: str, endereco: str, senha: str):
+        self.__id = id
+        self.__nome = nome
+        self.__email = email
+        self.__fone = fone
+        self.__endereco = endereco
+        self.__senha = senha
+    
+    def __str__(self):
+        return f"{self.__id} - {self.__nome} - {self.__email} - {self.__fone} - { self.__endereco} - {self.__senha} "
+    
+    def get_id(self):
+        return self.__id
+
+    def set_id(self, id):
+        self.__id = id
+
+    def get_nome(self):
+        return self.__nome
+
+    def set_nome(self, nome):
+        self.__nome = nome
+
+    def get_email(self):
+        return self.__email
+
+    def set_email(self, email):
+        self.__email = email
+
+    def get_fone(self):
+        return self.__fone
+
+    def set_fone(self, fone):
+        self.__fone = fone
+
+    def get_endereco(self):
+        return self.__endereco
+    
+    def set_endereco(self, endereco):
+        self.__endereco = endereco
+
+    def get_senha(self):
+        return self.__senha
+    
+    def set_senha(self, senha):
+        self.__senha = senha
+
+    
+
+class Produto:
+    def __init__(self, id: int, descricao: str, preco: float):
+        self.__id = id
+        self.__descricao = descricao
+        self.__preco = preco
+
+    def __str__(self):
+        return f"{self.__id} - {self.__descricao}"
+
+    def get_id(self):
+        return self.__id
+
+    def set_id(self, id):
+        self.__id = id
+
+    def get_descricao(self):
+        return self.__descricao
+
+    def set_descricao(self, descricao):
+        self.__descricao = descricao
+
+    def get_preco(self):
+        return self.__preco
+    
+    def set_preco(self, preco):
+        self.__preco = preco
+
+
+class Venda:
+    def __init__(self, id: int, data: datetime, carrinho: bool, total: float, idcliente: int, iditem: int):
+        self.__id = id
+        self.__data = data
+        self.__carrinho = carrinho
+        self.__total = total
+        self.__idcliente = idcliente
+        self.__iditem = iditem
+
+    def __str__(self):
+        return f"{self.__id} - {self.__data} - {self.__carrinho} - {self.__total} - {self.__idcliente} - {self.__iditem}"
+
+    def get_id(self):
+        return self.__id
+
+    def set_id(self, id):
+        self.__id = id
+
+    def get_data(self):
+        return self.__data
+
+    def set_data(self, data):
+        self.__data = data
+
+    def get_carrinho(self):
+        return self.__carrinho
+
+    def set_carrinho(self, carrinho):
+        self.__carrinho = carrinho
+
+    def get_total(self):
+        return self.__total
+
+    def set_total(self, total):
+        self.__total = total
+
+    def get_id_cliente(self):
+        return self.__idcliente
+
+    def set_id_cliente(self, idcliente):
+        self.__idcliente = idcliente
+
+    def get_id_item(self):
+        return self.__iditem
+    
+    def set_id_item(self, iditem):
+        self.__iditem = iditem
+
+
+
+#persistencias 
+#cliente
+
+
+class Clientes:
+    __objetos = []
+
+    @classmethod
+    def inserir(cls, obj):
+        cls.Abrir()
+        id = 0
+        for x in cls.__objetos:
+            if x.get_id() > id: id = x.get_id()
+        id += 1
+        obj.set_id(id)
+        cls.__objetos.app(obj)
+        cls.salvar()
+
+    @classmethod
+    def listar(cls):
+        cls.Abrir()
+        return cls.__objetos
+    
+    @classmethod
+    def listar_id(cls, id):
+        cls.Abrir()
+        for x in cls.__objetos:
+            if x.get_id() == id: return x
+        return None
+    
+    
+
+
+    @classmethod
+    def atualizar(cls, obj):
+        x = cls.listar_id(obj.get_id())
+        if x:
+            x.set_nome(obj.get_nome())
+            x.set_email(obj.get_email())
+            x.set_fone(obj.get_fone())
+            x.set_endereco(obj.get_endereco())
+            x.set_senha(obj.get_senha())
+            cls.salvar()
+
+    @classmethod
+    def ecluir(cls,obj):
+        x = cls.listar_id(obj.get_id())
+        if x:
+            cls.__objetos.remove(x)
+            cls.salvar()
+
+
+    @classmethod
+    def salvar(cls):
+        with open("clientes.json", mode="w") as arquivo:
+            json.dump(cls.__objetos, arquivo, default=vars)
+
+    @classmethod
+    def Abrir(cls):
+        cls.__objetos = []
+        try:
+            with open("clientes.json", mode ="r") as arquivo:
+                texto_arquivo = json.load(arquivo)
+                for obj in texto_arquivo:
+                    c = Cliente(obj["_Cliente__id"], obj["_Cliente__nome"], obj ["_Cliente__email"], obj["_Cliente__fone"], obj["_Cliente__endereco"], obj["_Cliente__senha"])
+                    cls.__objetos.append(c)
+        except FileNotFoundError:
+            pass
+
+#produtos
+class Produtos:
+    __Objetos = []
+
+    @classmethod
+    def inserir(cls, obj):
+        cls.Abrir()
+        id = 0
+        for x in cls.__Objetos:
+            if x.get_id() > id: id = x.get_id()
+        id += 1
+        obj.set_id(id)
+        cls.__Objetos.app(obj)
+        cls.salvar()
+
+    @classmethod
+
+    def listar(cls):
+        cls.Abrir()
+        return cls.__Objetos
+
+
+    def listar_id(cls, id):
+        cls.Abrir()
+        for x in cls.__Objetos:
+            if x.get_id() == id: return x
+        return None
+
+
+    
+    @classmethod
+    def atualizar(cls, obj):
+        x = cls.listar_id(obj.get_id())
+        if x:
+            x.set_descricao(obj.get_descricao())
+            x.set_preco(obj.get_preco())
+            cls.salvar()
+
+
+
+    @classmethod
+    def excluiir(cls, obj):
+        x = cls.listar_id(obj.get_id())
+        if x:
+            cls.__Objetos.remove(x)
+            cls.salvar
+        
+
+
+    @classmethod
+    def salvar(cls):
+        with open("produtos.json", mode ="w") as arquivo:
+            json.dump(cls.__Objetos, arquivo, default=vars)
+
+    
+    @classmethod
+    def Abrir(cls):
+        cls.__Objetos = []
+        try:
+            with open("produtos.json", mode="r") as arquivo:
+                texto_arquivo = json.load(arquivo)
+                for obj in texto_arquivo:
+                    a = Produto(obj["_Produto__id"], obj["_Produto__descricao"], obj["_Produto__preco"])
+                    cls.__Objetos.append(a)
+        except FileNotFoundError:
+            pass
+
+       
+
+
+
+
+        
+        
+
+
+
+    
